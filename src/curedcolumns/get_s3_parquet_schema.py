@@ -21,14 +21,24 @@ def get_s3_parquet_schema(session, bucket: str, key: Union[str, Path]) -> pyarro
     # Connect to AWS S3
     # https://arrow.apache.org/docs/python/filesystems.html#s3
     credentials = session.get_credentials()
+
+    # Get the VPC Endpoint dynamically from boto3
+    s3_client = session.client("s3")
+    endpoint_url = s3_client.meta.endpoint_url
+
     s3_file_system = pyarrow.fs.S3FileSystem(
         access_key=credentials.access_key,
         secret_key=credentials.secret_key,
         region=session.region_name,
-        session_token=credentials.token
+        session_token=credentials.token,
+        endpoint_override=endpoint_url
     )
 
-    # Build data set location
+    # Build dataset location
+    key_str = str(key)
+    if not key_str.endswith("/"):
+        key_str += "/"
+    
     path = f"{bucket}/{key}"
 
     # Use pyarrow to access the metadata
