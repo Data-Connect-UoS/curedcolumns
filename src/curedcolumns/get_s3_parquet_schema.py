@@ -38,7 +38,7 @@ def get_s3_parquet_schema(session, bucket: str, key: Union[str, Path]) -> pyarro
     key_str = str(key)
     if not key_str.endswith("/"):
         key_str += "/"
-    # Build data set location
+    
     path = f"{bucket}/{key}"
 
     # Use pyarrow to access the metadata
